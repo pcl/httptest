@@ -8,7 +8,7 @@ import (
 
 func AssertResponseStatus(t *testing.T, expectedStatus int, response *http.Response) {
 	if response.StatusCode != expectedStatus {
-		t.Fatalf("expected 200; got '%v'", response.StatusCode)
+		t.Fatalf("expected 200; got '%v' Body: '%v'", response.StatusCode, ReadResponseBody(t, response))
 	}
 }
 
