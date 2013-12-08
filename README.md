@@ -24,25 +24,29 @@ muxrunner package provides some functions to write endpoint-oriented tests that 
 
 First, set up your handlers as you would normally:
 
-    func init() {
-    	r := mux.NewRouter()
-        r.HandleFunc("/", HomeHandler)
-    	http.Handle("/", r)
-    }
+```go
+func init() {
+    r := mux.NewRouter()
+    r.HandleFunc("/", HomeHandler)
+    http.Handle("/", r)
+}
 
-    func HomeHandler(w http.ResponseWriter, r *http.Request) {
-    	fmt.Fprintf(w, "HomeHandler")
-    }
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "HomeHandler")
+}
+```
 
 Next, write a test that creates a RequestRunner and executes a request against it:
 
-    func TestHomeHandler() {
-        runner := muxrunner.NewInProcessRequestRunner()
-	    req, _ := http.NewRequest("GET", "/path/to/handler", nil)
-	    response, _ := runner.Do(req)
-    	testutil.AssertResponseStatus(t, 200, response)
-    	testutil.AssertResponseBody(t, "HomeHandler", response)
-    }
+```go
+func TestHomeHandler() {
+    runner := muxrunner.NewInProcessRequestRunner()
+    req, _ := http.NewRequest("GET", "/path/to/handler", nil)
+    response, _ := runner.Do(req)
+    testutil.AssertResponseStatus(t, 200, response)
+    testutil.AssertResponseBody(t, "HomeHandler", response)
+}
+```
 
 <a id="testutil"/>
 ### HTTP testing utilities ###
