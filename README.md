@@ -2,10 +2,9 @@
 
 This module contains a number of Go HTTP test utilities.
 
-1. [In-process gorilla/mux test harness](#muxrunner)
-2. [Unit testing utilities (assertions etc.)](#testutil)
+1. [In-process gorilla/mux test harness](#in-process-gorillamux-test-harness)
+2. [Unit testing utilities (assertions etc.)](#http-testing-utilities)
 
-<a id="muxrunner"/>
 ### In-process gorilla/mux test harness ###
 
 The [Gorilla mux](http://www.gorillatoolkit.org/pkg/mux) package is a powerful framework
@@ -19,7 +18,6 @@ muxrunner package provides some functions to write endpoint-oriented tests that 
 (Currently, only the in-process variant is implemented. Next step: implement the remote testing
  function, and environment variables to detect the appropriate current context.)
 
-<a id="muxrunner-usage"/>
 #### Usage ####
 
 First, set up your handlers as you would normally:
@@ -48,9 +46,8 @@ func TestHomeHandler() {
 }
 ```
 
-<a id="testutil"/>
 ### HTTP testing utilities ###
 
 This package provides some useful functions for writing HTTP-oriented tests,
-including response body and header assertions. See the [usage for muxrunner](#muxrunner-usage)
+including response body and header assertions. See the [usage for muxrunner](#usage)
 above for an example.
