@@ -8,7 +8,7 @@ import (
 )
 
 func TestHomeHandler(t *testing.T) {
-	runner := muxrunner.NewInProcessRequestRunner()
+	runner := muxrunner.InProcessClient()
 	req, _ := http.NewRequest("GET", "/", nil)
 	response, _ := runner.Do(req)
 	testutil.AssertResponseStatus(t, 200, response)
@@ -16,7 +16,7 @@ func TestHomeHandler(t *testing.T) {
 }
 
 func TestHeaders(t *testing.T) {
-	runner := muxrunner.NewInProcessRequestRunner()
+	runner := muxrunner.InProcessClient()
 	req, _ := http.NewRequest("GET", "/headers", nil)
 	req.Header.Add("Foo", "Bar")
 	response, _ := runner.Do(req)

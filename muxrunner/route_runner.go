@@ -10,23 +10,19 @@ import (
 	mockHttp "github.com/stretchr/testify/http"
 )
 
-type RequestRunner interface {
-	Do(req *http.Request) (*http.Response, error)
+func InProcessClient() *http.Client {
+	return InProcessClientWithServeMux(http.DefaultServeMux)
 }
 
-func NewInProcessRequestRunner() RequestRunner {
-	return NewInProcessRequestRunnerWithServeMux(http.DefaultServeMux)
+func InProcessClientWithServeMux(mux *http.ServeMux) *http.Client {
+	return &http.Client{ Transport: inProcessRoundTripper{ mux: mux } }
 }
 
-func NewInProcessRequestRunnerWithServeMux(mux *http.ServeMux) RequestRunner {
-	return InProcessRequestRunner{ mux: mux }
-}
-
-type InProcessRequestRunner struct {
+type inProcessRoundTripper struct {
 	mux *http.ServeMux
 }
 
-func (r InProcessRequestRunner) Do(req *http.Request) (response *http.Response, err error) {
+func (r inProcessRoundTripper) RoundTrip(req *http.Request) (response *http.Response, err error) {
 	var match mux.RouteMatch
 	switch handler, _ := r.mux.Handler(req); handler.(type) {
 	default:

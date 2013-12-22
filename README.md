@@ -34,11 +34,11 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-Next, write a test that creates a RequestRunner and executes a request against it:
+Next, write a test that creates an in-process Client and executes a request against it:
 
 ```go
 func TestHomeHandler() {
-    runner := muxrunner.NewInProcessRequestRunner()
+    runner := muxrunner.InProcessClient()
     req, _ := http.NewRequest("GET", "/path/to/handler", nil)
     response, _ := runner.Do(req)
     testutil.AssertResponseStatus(t, 200, response)
@@ -51,3 +51,8 @@ func TestHomeHandler() {
 This package provides some useful functions for writing HTTP-oriented tests,
 including response body and header assertions. See the [usage for muxrunner](#usage)
 above for an example.
+
+### Development ###
+
+To test:
+```GOPATH=/Users/pcl/.go:/Users/pcl/src/go go test github.com/pcl/httptest/test```
