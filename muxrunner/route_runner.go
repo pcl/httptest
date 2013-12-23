@@ -31,7 +31,8 @@ func (r inProcessRoundTripper) RoundTrip(req *http.Request) (response *http.Resp
 
 	case *mux.Router:
 		if !handler.(*mux.Router).Match(req, &match) {
-			err = fmt.Errorf("no match found for path '%v'", req.RequestURI)
+			err = fmt.Errorf("no match found for path '%v'", req.URL)
+			return
 		}
 	}
 
