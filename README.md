@@ -54,5 +54,8 @@ above for an example.
 
 ### Development ###
 
+To build:
+```GOROOT=/usr/local/share/go-app-engine-64/goroot GOPATH=/Users/pcl/.go:/Users/pcl/src/go /usr/local/share/go-app-engine-64/goroot/bin/goapp build github.com/pcl/httptest/aeutil github.com/pcl/httptest/aetestutil github.com/pcl/httptest/muxrunner github.com/pcl/httptest/test github.com/pcl/httptest/testutil```
+
 To test:
 ```GOPATH=/Users/pcl/.go:/Users/pcl/src/go go test github.com/pcl/httptest/test```
