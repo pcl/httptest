@@ -41,6 +41,8 @@ func CreateAndRegisterTestContext() (context aetest.Context, err error) {
 		contextRequest.TransferEncoding = req.TransferEncoding
 		contextRequest.URL = req.URL
 
+		// ##### should have some way to register what header values to use here
+		req.Header.Set("X-AppEngine-Internal-User-Email", "foo@example.com")
 		return context
 	}
 
