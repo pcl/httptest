@@ -43,8 +43,13 @@ func CreateAndRegisterTestContext() (context aetest.Context, err error) {
 
 		// ##### should have some way to register what header values to use here
 		req.Header.Set("X-AppEngine-Internal-User-Email", "foo@example.com")
+		req.Header.Set("X-AppEngine-Internal-User-Id", "foo@example.com")
 		return context
 	}
+
+	// ##### should have some way to register what header values to use here
+	context.Request().(*http.Request).Header.Set("X-AppEngine-Internal-User-Email", "foo@example.com")
+	context.Request().(*http.Request).Header.Set("X-AppEngine-Internal-User-Id", "foo@example.com")
 
 	return
 }
