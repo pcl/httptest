@@ -1,10 +1,16 @@
 package aetestutil
 
 import (
-	"net/http"
 	"appengine"
 	"appengine/aetest"
+	"github.com/pcl/httptest/muxrunner"
 	"github.com/pcl/httptest/aeutil"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"os"
+	"strings"
+	"testing"
 )
 
 /**
@@ -48,8 +54,71 @@ func CreateAndRegisterTestContext() (context aetest.Context, err error) {
 	}
 
 	// ##### should have some way to register what header values to use here
-	context.Request().(*http.Request).Header.Set("X-AppEngine-Internal-User-Email", "foo@example.com")
-	context.Request().(*http.Request).Header.Set("X-AppEngine-Internal-User-Id", "foo@example.com")
+	req := context.Request().(*http.Request)
+	req.Header.Set("X-AppEngine-Internal-User-Email", "foo@example.com")
+	req.Header.Set("X-AppEngine-Internal-User-Id", "foo@example.com")
 
 	return
+}
+
+func CreateRegisterAndAssertTestContext(t *testing.T) aetest.Context {
+	c, err := CreateAndRegisterTestContext()
+	if err != nil {
+		t.Fatalf("CreateRegisterAndAssertTestContext: %v", err)
+	}
+	return c
+}
+
+func ExecuteAndAssertPostWithFormValues(t *testing.T, path string, formValues map[string]string) *http.Response {
+
+	req := CreateAndAssertHttpRequest(t, "POST", path)
+
+	values := url.Values{}
+	for k, v := range formValues {
+		values.Add(k, v)
+	}
+	req.Form = values
+
+	return doRequestAndAssert(t, req)
+}
+
+func ExecuteAndAssertPostWithBodyText(t *testing.T, path string, body string) *http.Response {
+	req := CreateAndAssertHttpRequest(t, "POST", path)
+	req.Body = ioutil.NopCloser(strings.NewReader(body))
+	return doRequestAndAssert(t, req)
+}
+
+func ExecuteAndAssertGet(t *testing.T, path string) *http.Response {
+	req := CreateAndAssertHttpRequest(t, "GET", path)
+	return doRequestAndAssert(t, req)
+}
+
+func doRequestAndAssert(t *testing.T, req *http.Request) *http.Response {
+	var client *http.Client
+	if testHost() == "" {
+		client = muxrunner.InProcessClient()
+		req.URL.Scheme = "http"
+		req.URL.Host = "localhost"
+	}
+
+    response, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("Error executing request against '%v': %v", req.URL, err)
+	}
+	return response
+}
+
+func CreateAndAssertHttpRequest(t *testing.T, method, path string) (req *http.Request) {
+	location := testHost() + path
+	var err error
+	req, err = http.NewRequest(method, location, nil)
+	if err != nil {
+		t.Fatalf("Error creating request for '%v': %v", location, err)
+	}
+
+	return
+}
+
+func testHost() string {
+	return os.Getenv("TARGET_HOST")
 }

@@ -2,12 +2,12 @@ package muxrunner
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"github.com/gorilla/mux"
 	"fmt"
 	"bufio"
 	"bytes"
 	"reflect"
-	mockHttp "github.com/stretchr/testify/http"
 )
 
 func InProcessClient() *http.Client {
@@ -30,21 +30,23 @@ func (r inProcessRoundTripper) RoundTrip(req *http.Request) (response *http.Resp
 		return
 
 	case *mux.Router:
-		if !handler.(*mux.Router).Match(req, &match) {
+		muxRouter := handler.(*mux.Router)
+		if !muxRouter.Match(req, &match) {
 			err = fmt.Errorf("no match found for path '%v'", req.URL)
 			return
 		}
+
+		responseWriter := httptest.NewRecorder()
+		muxRouter.ServeHTTP(responseWriter, req)
+
+		var httpBuffer bytes.Buffer
+		fmt.Fprintf(&httpBuffer, "HTTP/1.1 %v\r\n", statusLine(responseWriter.Code))
+		responseWriter.Header().Write(&httpBuffer)
+		fmt.Fprintf(&httpBuffer, "\r\n%v", responseWriter.Body.String())
+
+		response, err = http.ReadResponse(bufio.NewReader(&httpBuffer), req)
 	}
 
-	responseWriter := mockHttp.TestResponseWriter{}
-	match.Handler.(http.HandlerFunc)(&responseWriter, req) // TODO check that it's a HandlerFunc to avoid a panic
-
-	var httpBuffer bytes.Buffer
-	fmt.Fprintf(&httpBuffer, "HTTP/1.1 %v\r\n", statusLine(responseWriter.WrittenHeaderInt))
-	responseWriter.Header().Write(&httpBuffer)
-	fmt.Fprintf(&httpBuffer, "\r\n%v", responseWriter.Output)
-
-	response, err = http.ReadResponse(bufio.NewReader(&httpBuffer), req)
 	return
 }
 
