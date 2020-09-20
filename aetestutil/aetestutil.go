@@ -2,7 +2,7 @@ package aetestutil
 
 import (
 	"context"
-	"github.com/pcl/httptest/muxrunner"
+	//"github.com/pcl/httptest/muxrunner"
 	//#####"github.com/pcl/httptest/aeutil"
 	"google.golang.org/appengine/aetest"
 	"io/ioutil"
@@ -96,12 +96,13 @@ func ExecuteAndAssertGet(i aetest.Instance, t *testing.T, path string) *http.Res
 }
 
 func doRequestAndAssert(t *testing.T, req *http.Request) *http.Response {
-	var client *http.Client
-	if testHost() == "" {
+	var client http.Client
+	/*	if testHost() == "" {
+		log.Printf("making in-process client")
 		client = muxrunner.InProcessClient()
 		req.URL.Scheme = "http"
 		req.URL.Host = "localhost"
-	}
+	}*/
 
     response, err := client.Do(req)
 	if err != nil {
